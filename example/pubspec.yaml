@@ -1,0 +1,22 @@
+name: muscle_mapper_example
+description: "Demonstrates how to use the muscle_mapper package."
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.5.4
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  muscle_mapper:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,24 @@
+name: muscle_mapper
+description: "A pure Dart/Flutter UI package providing a 2D human anatomy model with multi-select muscle highlighting and a BYOA (Bring Your Own Asset) architecture."
+version: 0.0.3
+homepage: https://github.com/musclemapper/muscle_mapper
+
+environment:
+  sdk: ^3.5.4
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.0.10
+  xml: ^6.5.0
+  path_drawing: ^1.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  assets:
+    - lib/src/assets/
