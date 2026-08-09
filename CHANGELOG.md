@@ -1,3 +1,7 @@
+## 0.0.4
+
+* **Documentation**: Updated `homepage` in `pubspec.yaml` to point to the correct GitHub repository URL.
+
 ## 0.0.3
 
 * **3-Tier Anatomical Hierarchy**: Redesigned the `Muscle` enum from 18 broad regions to 35 highly granular sub-muscles, directly matching individual SVG group IDs (e.g. `shortHeadBicep`, `longHeadBicep`).
