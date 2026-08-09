@@ -1,3 +1,7 @@
+## 0.0.5
+
+* **Documentation**: Added demo GIF to README and added programmatic highlighting instructions.
+
 ## 0.0.4
 
 * **Documentation**: Updated `homepage` in `pubspec.yaml` to point to the correct GitHub repository URL.

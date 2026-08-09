@@ -115,6 +115,17 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
               ],
             ),
           ),
+          OutlinedButton.icon(
+            onPressed: () {
+              setState(() {
+                _gender = AnatomyGender.male;
+                _view = AnatomyView.front;
+                _selectedMuscles.addAll(MuscleGroup.chest.subMuscles);
+              });
+            },
+            icon: const Icon(Icons.fitness_center),
+            label: const Text('Programmatic Highlight: Chest'),
+          ),
           Expanded(
             child: Center(
               child: SizedBox(

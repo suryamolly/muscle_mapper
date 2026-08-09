@@ -1,4 +1,6 @@
-# Muscle Mapper
+# 🧍 Muscle Mapper
+
+![Demo Video](doc/demo.gif)
 
 A pure Dart/Flutter UI package providing an interactive 2D human anatomy model with muscle highlighting, tap detection, and multi-select support.
 
@@ -153,6 +155,23 @@ MuscleMapper(
 
 // Find which major group a sub-muscle belongs to
 final majorGroup = Muscle.longHeadBicep.group.majorGroup; // → MajorMuscleGroup.arms
+```
+---
+
+## Programmatic Highlighting
+
+Because `MuscleMapper` is completely declarative, you have 100% control over what is highlighted from outside the widget. Simply modify your `Set<Muscle>` and call `setState()`.
+
+```dart
+ElevatedButton(
+  onPressed: () {
+    setState(() {
+      // Instantly highlight the entire chest from code!
+      _activeMuscles.addAll(MuscleGroup.chest.subMuscles);
+    });
+  },
+  child: const Text('Workout of the Day: Chest'),
+)
 ```
 
 ---
