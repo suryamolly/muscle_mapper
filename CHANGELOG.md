@@ -1,3 +1,7 @@
+## 0.0.6
+
+* **Maintenance**: Bumped `flutter_svg` to `^2.3.0` and `xml` to `^7.0.1` to support the latest up-to-date dependencies for pub.dev scoring.
+
 ## 0.0.5
 
 * **Documentation**: Added demo GIF to README and added programmatic highlighting instructions.
