@@ -36,6 +36,7 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
   InteractionMode _mode = InteractionMode.group;
   AnatomyGender _gender = AnatomyGender.male;
   AnatomyView _view = AnatomyView.front;
+  AnatomyStyle _style = AnatomyStyle.minimal;
 
   void _onMuscleTapped(Muscle tappedMuscle) {
     setState(() {
@@ -72,17 +73,35 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
               runSpacing: 16.0,
               alignment: WrapAlignment.center,
               children: [
-                SegmentedButton<AnatomyGender>(
+                SegmentedButton<AnatomyStyle>(
                   segments: const [
                     ButtonSegment(
-                        value: AnatomyGender.male, label: Text('Male')),
+                        value: AnatomyStyle.minimal, label: Text('Minimal')),
                     ButtonSegment(
-                        value: AnatomyGender.female, label: Text('Female')),
+                        value: AnatomyStyle.advanced, label: Text('Advanced')),
                   ],
-                  selected: {_gender},
-                  onSelectionChanged: (selection) =>
-                      setState(() => _gender = selection.first),
+                  selected: {_style},
+                  onSelectionChanged: (selection) {
+                    setState(() {
+                      _style = selection.first;
+                      if (_style == AnatomyStyle.advanced) {
+                        _gender = AnatomyGender.male; // Enforce male for advanced
+                      }
+                    });
+                  },
                 ),
+                if (_style == AnatomyStyle.minimal)
+                  SegmentedButton<AnatomyGender>(
+                    segments: const [
+                      ButtonSegment(
+                          value: AnatomyGender.male, label: Text('Male')),
+                      ButtonSegment(
+                          value: AnatomyGender.female, label: Text('Female')),
+                    ],
+                    selected: {_gender},
+                    onSelectionChanged: (selection) =>
+                        setState(() => _gender = selection.first),
+                  ),
                 SegmentedButton<AnatomyView>(
                   segments: const [
                     ButtonSegment(
@@ -134,11 +153,17 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
                 child: MuscleMapper(
                   gender: _gender,
                   view: _view,
-                  assetProvider: const DefaultAnatomyProvider(),
+                  assetProvider: DefaultAnatomyProvider(style: _style),
                   activeMuscles: _selectedMuscles,
                   onMuscleTapped: _onMuscleTapped,
                   highlightColor: Colors.redAccent,
                   baseColor: Colors.grey.shade300,
+                  verbose: true,
+                  onError: (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error loading SVG: $e')),
+                    );
+                  },
                 ),
               ),
             ),

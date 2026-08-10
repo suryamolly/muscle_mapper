@@ -53,7 +53,7 @@ flutter pub get
 |---|---|---|---|
 | `gender` | `AnatomyGender` | ✅ | The gender of the anatomy model (`male` or `female`). |
 | `view` | `AnatomyView` | ✅ | The view direction (`front` or `back`). |
-| `assetProvider` | `AnatomyAssetProvider` | ✅ | The provider that loads and renders the SVG files. Use `DefaultAnatomyProvider()` for bundled assets. |
+| `assetProvider` | `AnatomyAssetProvider` | ✅ | The provider that loads and renders the SVG files. Use `DefaultAnatomyProvider(style: AnatomyStyle.minimal)` or `AnatomyStyle.advanced`. |
 | `activeMuscles` | `Set<Muscle>` | ✅ | The set of muscles that are currently highlighted. |
 | `onMuscleTapped` | `void Function(Muscle)?` | ❌ | Callback fired when the user taps a muscle region. |
 | `onMuscleDoubleTapped` | `void Function(Muscle)?` | ❌ | Callback fired when the user double-taps a muscle region. |
@@ -73,7 +73,22 @@ flutter pub get
 
 ---
 
-## How to Provide SVGs
+## Anatomy Styles (Minimal vs. Advanced)
+
+The `DefaultAnatomyProvider` comes with two bundled SVG styles:
+1. `AnatomyStyle.minimal` (Default): A fast, lightweight, and modern SVG ideal for fitness apps.
+2. `AnatomyStyle.advanced`: A highly detailed, medically accurate SVG perfect for clinical or educational apps.
+
+**Important Note on Advanced Assets**:
+Currently, the `advanced` style only provides **male** anatomy assets. If you request `AnatomyGender.female` while using `AnatomyStyle.advanced`, the package will safely fall back to displaying the male advanced model to prevent crashing.
+
+### Attribution (Advanced SVGs)
+The `advanced` SVGs are generously provided under the CC BY 4.0 license by **Ryan Graves**.
+If you use `AnatomyStyle.advanced` in your public application, you must provide attribution to Ryan Graves. See the `CREDITS.md` file for full attribution details.
+
+---
+
+## How to Provide Custom SVGs
 
 The package requires 4 whole-body SVG files. Each file must use `<g id="...">` groups so the package can extract the base body layer and individual muscle layers dynamically.
 

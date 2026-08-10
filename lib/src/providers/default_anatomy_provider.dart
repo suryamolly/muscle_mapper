@@ -6,12 +6,19 @@ import '../models/anatomy_asset_provider.dart';
 
 /// A default implementation of [AnatomyAssetProvider] that uses bundled SVG assets.
 class DefaultAnatomyProvider implements AnatomyAssetProvider {
-  const DefaultAnatomyProvider();
+  final AnatomyStyle style;
+
+  const DefaultAnatomyProvider({
+    this.style = AnatomyStyle.minimal,
+  });
 
   @override
   Future<String> getAnatomySvgRawString(
       AnatomyGender gender, AnatomyView view) async {
-    final genderStr = gender == AnatomyGender.male ? 'male' : 'female';
+    // Advanced style only has male assets right now; fallback to male.
+    final effectiveGender = style == AnatomyStyle.advanced ? AnatomyGender.male : gender;
+    
+    final genderStr = effectiveGender == AnatomyGender.male ? 'male' : 'female';
     final viewStr = view == AnatomyView.front ? 'front' : 'back';
 
     // Maps to the specific filenames the user provided:
@@ -19,11 +26,12 @@ class DefaultAnatomyProvider implements AnatomyAssetProvider {
     // male_back_muscle_anatomy.svg
     // female_front_muscles_anatomy.svg
     // female_back_muscles_anatomy.svg
-    final fileName = gender == AnatomyGender.female
+    final fileName = effectiveGender == AnatomyGender.female
         ? '${genderStr}_${viewStr}_muscles_anatomy.svg'
         : '${genderStr}_${viewStr}_muscle_anatomy.svg';
 
-    final path = 'lib/src/assets/$fileName';
+    final styleFolder = style == AnatomyStyle.advanced ? 'advanced' : 'minimal';
+    final path = 'lib/src/assets/$styleFolder/$fileName';
 
     return await rootBundle.loadString('packages/muscle_mapper/$path');
   }
@@ -35,4 +43,13 @@ class DefaultAnatomyProvider implements AnatomyAssetProvider {
       fit: fit,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is DefaultAnatomyProvider && other.style == style;
+  }
+
+  @override
+  int get hashCode => style.hashCode;
 }

@@ -14,12 +14,14 @@ class _ParsedSvgData {
   final Map<Muscle, String> muscleSources;
   final Map<Muscle, Path> musclePaths;
   final Rect viewBox;
+  final bool isAdvancedMode;
 
-  const _ParsedSvgData({
+  _ParsedSvgData({
     required this.baseSource,
     required this.muscleSources,
     required this.musclePaths,
     required this.viewBox,
+    required this.isAdvancedMode,
   });
 }
 
@@ -111,9 +113,10 @@ class _MuscleMapperState extends State<MuscleMapper> {
   final Map<Muscle, Path> _musclePaths = {};
 
   /// SVG viewBox rectangle for coordinate mapping.
-  Rect _viewBox = const Rect.fromLTWH(0, 0, 676, 1203);
+  Rect _viewBox = Rect.zero;
 
   bool _isLoading = true;
+  bool _isAdvancedMode = false;
 
   @override
   void initState() {
@@ -124,7 +127,9 @@ class _MuscleMapperState extends State<MuscleMapper> {
   @override
   void didUpdateWidget(covariant MuscleMapper oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.gender != widget.gender || oldWidget.view != widget.view) {
+    if (oldWidget.gender != widget.gender ||
+        oldWidget.view != widget.view ||
+        oldWidget.assetProvider != widget.assetProvider) {
       _loadAssets();
     }
   }
@@ -132,9 +137,15 @@ class _MuscleMapperState extends State<MuscleMapper> {
   // ─────────────────────────── Asset Loading ───────────────────────────
 
   Future<void> _loadAssets() async {
-    if (mounted) setState(() => _isLoading = true);
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _baseAnatomySource = null;
+      });
+    }
 
-    final cacheKey = '${widget.gender.name}_${widget.view.name}';
+    final cacheKey =
+        '${widget.gender.name}_${widget.view.name}_${widget.assetProvider.hashCode}';
 
     // ── Cache hit: populate local state instantly from cached data ──
     if (MuscleMapper._cache.containsKey(cacheKey)) {
@@ -147,6 +158,7 @@ class _MuscleMapperState extends State<MuscleMapper> {
         ..clear()
         ..addAll(cached.musclePaths);
       _viewBox = cached.viewBox;
+      _isAdvancedMode = cached.isAdvancedMode;
       if (widget.verbose) {
         debugPrint('MuscleMapper: cache HIT for $cacheKey');
       }
@@ -175,21 +187,39 @@ class _MuscleMapperState extends State<MuscleMapper> {
         }
       }
 
-      // Base layer: combine <g id="body"> with any un-ID'd orphaned paths (e.g. the head)
       final baseElements = <XmlElement>[];
       final bodyEl = _findElementById(root, 'body');
-      if (bodyEl != null) baseElements.add(bodyEl);
+      final underlayerEl = _findElementById(root, 'underlayer');
+      final nonMuscleEl = _findElementById(root, 'non_muscle');
 
-      // Collect any top-level elements without an ID (which the SVG editor might have left orphaned)
+      _isAdvancedMode = (underlayerEl != null);
+
+      if (bodyEl != null) baseElements.add(bodyEl);
+      if (underlayerEl != null) baseElements.add(underlayerEl);
+      if (nonMuscleEl != null) baseElements.add(nonMuscleEl);
+
       for (final child in root.children.whereType<XmlElement>()) {
         if (child.getAttribute('id') == null) {
           baseElements.add(child);
         }
       }
 
-      _baseAnatomySource = baseElements.isNotEmpty
-          ? _buildSvgString(root, baseElements)
-          : rawSvg;
+      if (_isAdvancedMode) {
+        // Advanced mode SVGs from flutter_body_atlas use adjacent solid paths with no strokes.
+        // We inject a stroke to create visible boundaries between muscles on the base layer.
+        for (final child in root.descendants.whereType<XmlElement>()) {
+          if (child.name.local == 'path' && child.getAttribute('fill')?.trim() == '#BDBDBD') {
+            child.setAttribute('stroke', '#E0E0E0');
+            child.setAttribute('stroke-width', '2');
+            child.setAttribute('stroke-linejoin', 'round');
+          }
+        }
+        _baseAnatomySource = root.toXmlString();
+      } else {
+        _baseAnatomySource = baseElements.isNotEmpty
+            ? _buildSvgString(root, baseElements)
+            : rawSvg;
+      }
 
       _muscleSources.clear();
       _musclePaths.clear();
@@ -230,6 +260,7 @@ class _MuscleMapperState extends State<MuscleMapper> {
         muscleSources: Map.unmodifiable(_muscleSources),
         musclePaths: Map.unmodifiable(_musclePaths),
         viewBox: _viewBox,
+        isAdvancedMode: _isAdvancedMode,
       );
     } catch (e) {
       if (widget.verbose) debugPrint('MuscleMapper error: $e');
@@ -410,16 +441,24 @@ class _MuscleMapperState extends State<MuscleMapper> {
               // All taps are handled by the parent GestureDetector.
               ..._muscleSources.entries.map((entry) {
                 final isActive = widget.activeMuscles.contains(entry.key);
+                final opacity = isActive ? 1.0 : 0.0;
+                
+                Widget muscleWidget = widget.assetProvider.buildSvgWidget(entry.value);
+                
+                if (isActive) {
+                  muscleWidget = ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                        widget.highlightColor, BlendMode.srcIn),
+                    child: muscleWidget,
+                  );
+                }
+
                 return IgnorePointer(
                   child: AnimatedOpacity(
                     duration: widget.animationDuration,
                     curve: widget.animationCurve,
-                    opacity: isActive ? 1.0 : 0.0,
-                    child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                          widget.highlightColor, BlendMode.srcIn),
-                      child: widget.assetProvider.buildSvgWidget(entry.value),
-                    ),
+                    opacity: opacity,
+                    child: muscleWidget,
                   ),
                 );
               }),

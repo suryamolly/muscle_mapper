@@ -21,4 +21,5 @@ dev_dependencies:
 
 flutter:
   assets:
-    - lib/src/assets/
+    - lib/src/assets/minimal/
+    - lib/src/assets/advanced/

@@ -10,6 +10,12 @@ enum AnatomyView {
   back,
 }
 
+/// Defines the style of the SVG anatomy model.
+enum AnatomyStyle {
+  minimal,
+  advanced,
+}
+
 /// Represents the most granular level of interactivity. Each [Muscle] matches
 /// EXACTLY one `<g id="...">` group in the SVG files.
 enum Muscle {
@@ -68,75 +74,75 @@ extension MuscleSvgId on Muscle {
   List<String> get svgIds {
     switch (this) {
       case Muscle.upperPectoralis:
-        return ['upper-pectoralis'];
+        return ['upper-pectoralis', 'pectoralis_major_l', 'pectoralis_major_r'];
       case Muscle.midLowerPectoralis:
-        return ['mid-lower-pectoralis'];
+        return ['mid-lower-pectoralis', 'pectoralis_major_l', 'pectoralis_major_r'];
       case Muscle.upperAbdominals:
-        return ['upper-abdominals'];
+        return ['upper-abdominals', 'rectus_abdominis_1', 'rectus_abdominis_2_l', 'rectus_abdominis_2_r'];
       case Muscle.lowerAbdominals:
-        return ['lower-abdominals'];
+        return ['lower-abdominals', 'rectus_abdominis_3_l', 'rectus_abdominis_3_r', 'rectus_abdominis_4_l', 'rectus_abdominis_4_r'];
       case Muscle.obliques:
-        return ['obliques'];
+        return ['obliques', 'external_oblique_1_l', 'external_oblique_2_l', 'external_oblique_3_l', 'external_oblique_4_l', 'external_oblique_5_l', 'external_oblique_6_l', 'external_oblique_7_l', 'external_oblique_8_l', 'external_oblique_1_r', 'external_oblique_2_r', 'external_oblique_3_r', 'external_oblique_4_r', 'external_oblique_5_r', 'external_oblique_6_r', 'external_oblique_7_r', 'external_oblique_8_r'];
       case Muscle.groin:
-        return ['groin'];
+        return ['groin', 'adductor_longus_l', 'adductor_longus_r', 'pectineus_l', 'pectineus_r', 'gracilis_l', 'gracilis_r', 'adductor_magnus_l', 'adductor_magnus_r'];
       case Muscle.longHeadBicep:
-        return ['long-head-bicep'];
+        return ['long-head-bicep', 'biceps_brachii_caput_longum_l', 'biceps_brachii_caput_longum_r'];
       case Muscle.shortHeadBicep:
-        return ['short-head-bicep'];
+        return ['short-head-bicep', 'biceps_brachii_caput_breve_l', 'biceps_brachii_caput_breve_r'];
       case Muscle.longHeadTriceps:
-        return ['long-head-triceps'];
+        return ['long-head-triceps', 'triceps_brachii_caput_longum_l', 'triceps_brachii_caput_longum_r'];
       case Muscle.lateralHeadTriceps:
-        return ['lateral-head-triceps', 'later-head-triceps'];
+        return ['lateral-head-triceps', 'later-head-triceps', 'triceps_brachii_caput_laterale_l', 'triceps_brachii_caput_laterale_r'];
       case Muscle.medialHeadTriceps:
-        return ['medial-head-triceps'];
+        return ['medial-head-triceps', 'triceps_brachii_caput_mediale_l', 'triceps_brachii_caput_mediale_r'];
       case Muscle.wristFlexors:
-        return ['wrist-flexors'];
+        return ['wrist-flexors', 'flexor_carpi_radialis_l', 'flexor_carpi_radialis_r', 'flexor_carpi_ulnaris_l', 'flexor_carpi_ulnaris_r', 'palmaris_longus_l', 'palmaris_longus_r', 'flexor_digitorum_superficialis_l', 'flexor_digitorum_superficialis_r', 'pronator_teres_l', 'pronator_teres_r', 'pronator_quadratus_l', 'pronator_quadratus_r'];
       case Muscle.wristExtensors:
-        return ['wrist-extensors'];
+        return ['wrist-extensors', 'extensor_carpi_radialis_longus_l', 'extensor_carpi_radialis_longus_r', 'extensor_digitorum_l', 'extensor_digitorum_r', 'extensor_carpi_ulnaris_l', 'extensor_carpi_ulnaris_r', 'brachioradialis_l', 'brachioradialis_r', 'anconeus_l', 'anconeus_r'];
       case Muscle.hands:
-        return ['hands'];
+        return ['hands', 'hand_l', 'hand_r', 'wrist_l', 'wrist_r', 'palm_l', 'palm_r'];
       case Muscle.anteriorDeltoid:
-        return ['anterior-deltoid'];
+        return ['anterior-deltoid', 'anterior_deltoid_l', 'anterior_deltoid_r'];
       case Muscle.lateralDeltoid:
-        return ['lateral-deltoid'];
+        return ['lateral-deltoid', 'lateral_deltoid_l', 'lateral_deltoid_r'];
       case Muscle.posteriorDeltoid:
-        return ['posterior-deltoid'];
+        return ['posterior-deltoid', 'posterior_deltoid_l', 'posterior_deltoid_r'];
       case Muscle.outerQuadricep:
-        return ['outer-quadricep'];
+        return ['outer-quadricep', 'vastus_lateralis_l', 'vastus_lateralis_r', 'iliotibial_tract_l', 'iliotibial_tract_r'];
       case Muscle.rectusFemoris:
-        return ['rectus-femoris'];
+        return ['rectus-femoris', 'rectus_femoris_l', 'rectus_femoris_r'];
       case Muscle.innerQuadricep:
-        return ['inner-quadricep'];
+        return ['inner-quadricep', 'vastus_medialis_l', 'vastus_medialis_r'];
       case Muscle.innerThigh:
-        return ['inner-thigh'];
+        return ['inner-thigh', 'sartoris_l', 'sartoris_r'];
       case Muscle.lateralHamstrings:
-        return ['lateral-hamstrings'];
+        return ['lateral-hamstrings', 'biceps_femoris_l', 'biceps_femoris_r'];
       case Muscle.medialHamstrings:
-        return ['medial-hamstrings'];
+        return ['medial-hamstrings', 'semitendinosus_l', 'semitendinosus_r', 'semimembranosus_1_l', 'semimembranosus_1_r', 'semimembranosus_2_l', 'semimembranosus_2_r'];
       case Muscle.gluteusMaximus:
-        return ['gluteus-maximus'];
+        return ['gluteus-maximus', 'gluteus_maximus_l', 'gluteus_maximus_r'];
       case Muscle.gluteusMedius:
-        return ['gluteus-medius'];
+        return ['gluteus-medius', 'gluteus_medius_1_l', 'gluteus_medius_1_r', 'gluteus_medius_2_l', 'gluteus_medius_2_r'];
       case Muscle.gastrocnemius:
-        return ['gastrocnemius'];
+        return ['gastrocnemius', 'gastrocnemius_l', 'gastrocnemius_r'];
       case Muscle.soleus:
-        return ['soleus'];
+        return ['soleus', 'soleus_l', 'soleus_r'];
       case Muscle.tibialis:
-        return ['tibialis'];
+        return ['tibialis', 'tibialis_anterior_l', 'tibialis_anterior_r', 'extensor_digitorum_longus_l', 'extensor_digitorum_longus_r', 'fibularis_longus_l', 'fibularis_longus_r', 'extensor_hallucis_longus_l', 'extensor_hallucis_longus_r'];
       case Muscle.feet:
-        return ['feet'];
+        return ['feet', 'foot_l', 'foot_r', 'ankle_l', 'ankle_r'];
       case Muscle.upperTrapezius:
-        return ['upper-trapezius', 'upper-trapzeius'];
+        return ['upper-trapezius', 'upper-trapzeius', 'trapezius_upper_l', 'trapezius_upper_r'];
       case Muscle.trapsMiddle:
-        return ['traps-middle'];
+        return ['traps-middle', 'trapezius_middle_l', 'trapezius_middle_r', 'infraspinatus_l', 'infraspinatus_r'];
       case Muscle.lowerTrapezius:
-        return ['lower-trapezius'];
+        return ['lower-trapezius', 'trapezius_lower_l', 'trapezius_lower_r'];
       case Muscle.lats:
-        return ['lats'];
+        return ['lats', 'latissimus_dorsi_l', 'latissimus_dorsi_r'];
       case Muscle.lowerBack:
         return ['lowerback'];
       case Muscle.neck:
-        return ['neck'];
+        return ['neck', 'sternocleidomastoid_l', 'sternocleidomastoid_r', 'platysma', 'sternohyoid'];
     }
   }
 
