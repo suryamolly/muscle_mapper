@@ -1,6 +1,9 @@
 # 🧍 Muscle Mapper
 
-![Demo Video](doc/demo.gif)
+<img src="doc/demo.gif" width="300" alt="Demo Video" />
+
+[![pub.dev](https://img.shields.io/pub/v/muscle_mapper.svg)](https://pub.dev/packages/muscle_mapper)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 A pure Dart/Flutter UI package providing an interactive 2D human anatomy model with muscle highlighting, tap detection, and multi-select support.
 
@@ -13,23 +16,48 @@ A pure Dart/Flutter UI package providing an interactive 2D human anatomy model w
 - **Interactive Tap Detection:** Tap on any muscle to trigger custom callbacks or toggle highlighting.
 - **Pixel-Perfect Hit Testing:** Hybrid architecture — `flutter_svg` renders the visuals while `path_drawing` parses invisible Flutter `Path` objects for mathematically precise tap detection with zero overlap bugs.
 - **Multi-Select Support:** Pass a `Set<Muscle>` to highlight multiple muscles simultaneously.
-- **Major Muscle Groups:** Highlight an entire section (e.g. Arms, Legs) using `MajorMuscleGroup.arms.subMuscles`.
-- **Dynamic Color Theming:** Set any `highlightColor` per widget instance.
+- **3-Tier Hierarchy:** Interact at the Sub-Muscle, MuscleGroup, or MajorMuscleGroup level.
+- **Programmatic Highlighting:** Control selections entirely from code — no user tap needed.
+- **Dynamic Color Theming:** Set any `highlightColor` and `baseColor` per widget instance.
 - **Smooth Animations:** Fade transitions when muscles activate or deactivate.
 - **BYOA Architecture:** Load SVGs from assets, network, or any source via a simple `AnatomyAssetProvider` interface.
 - **4-View Support:** Male Front, Male Back, Female Front, Female Back — all from a single widget.
 
 ---
 
-## Getting started
+## Getting Started
 
-Add to your `pubspec.yaml`:
+```bash
+flutter pub add muscle_mapper
+```
+
+Or add manually to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  muscle_mapper: ^0.0.3
-  flutter_svg: ^2.0.10
+  muscle_mapper: ^0.0.6
 ```
+
+Then run:
+```bash
+flutter pub get
+```
+
+---
+
+## API Reference
+
+### `MuscleMapper` Widget Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `gender` | `AnatomyGender` | ✅ | The gender of the anatomy model (`male` or `female`). |
+| `view` | `AnatomyView` | ✅ | The view direction (`front` or `back`). |
+| `assetProvider` | `AnatomyAssetProvider` | ✅ | The provider that loads and renders the SVG files. Use `DefaultAnatomyProvider()` for bundled assets. |
+| `activeMuscles` | `Set<Muscle>` | ✅ | The set of muscles that are currently highlighted. |
+| `onMuscleTapped` | `void Function(Muscle)?` | ❌ | Callback fired when the user taps a muscle region. |
+| `highlightColor` | `Color` | ❌ | The color used to tint highlighted muscles. Defaults to `Colors.red`. |
+| `baseColor` | `Color?` | ❌ | The color used for the base silhouette. |
 
 ---
 
@@ -254,147 +282,8 @@ The widget uses a **hybrid rendering + hit-testing** strategy:
 3. **On tap:** A single `GestureDetector` at the `Stack` level maps the screen tap coordinate into the SVG's `viewBox` coordinate space (using `BoxFit.contain` math), then uses `Path.contains()` to find the tapped muscle. This eliminates all overlap and tap-stealing issues.
 
 
-A pure Dart/Flutter UI package providing a 2D human anatomy model with interactive, multi-select muscle highlighting. 
+---
 
-`muscle_mapper` is built using a **BYOA (Bring Your Own Asset)** architecture. This allows you to completely customize the look of the anatomy models by simply providing your own SVG files, while the package handles all the interactive highlighting, selection logic, and XML parsing under the hood.
+## License
 
-## Features
-
-- **Interactive Highlighting:** Tap on any muscle to trigger custom callbacks or toggle highlighting.
-- **Pixel-Perfect Hit Testing:** Uses a hybrid architecture. Muscles are rendered natively via SVG strings for perfect visuals, while taps are mathematically calculated using `path_drawing` to completely eliminate overlap and tap-stealing bugs!
-- **Dynamic Recoloring:** Set custom base colors and highlight colors.
-- **Multi-Select Support:** Pass a `Set<Muscle>` to highlight multiple muscles simultaneously.
-- **Major Muscle Groups:** Easily highlight entire groups (like Arms or Legs) using `MuscleGroup.arms.subMuscles`.
-- **Fade Animations:** Smooth transitions when muscles are highlighted or unhighlighted.
-- **BYOA Architecture:** You supply 4 single SVG files (Male Front, Male Back, Female Front, Female Back), and the package dynamically extracts and manipulates the individual muscle groups!
-
-## Getting started
-
-Add `muscle_mapper` and `flutter_svg` to your `pubspec.yaml`:
-
-```yaml
-dependencies:
-  muscle_mapper: ^0.0.1
-  flutter_svg: ^2.0.10
-```
-
-## How to Provide SVGs
-
-The package requires you to provide 4 specific whole-body SVG files. These files must contain SVG groups (`<g>`) with exact `id` attributes corresponding to the muscles.
-
-### 1. Place the SVGs
-Place your SVG files in the `lib/src/assets/` folder of the package (or wherever your custom `AnatomyAssetProvider` points to):
-- `female_back_muscles_anatomy.svg`
-- `female_front_muscles_anatomy.svg`
-- `male_back_muscle_anatomy.svg`
-- `male_front_muscle_anatomy.svg`
-
-### 2. Required SVG Group IDs
-To allow the package to extract the base layer and individual muscles, your SVGs **must** use the following IDs for their `<g>` tags:
-
-- **Base Layer:** `id="body"`
-- **Front Muscles:** `chest`, `abdominals`, `biceps`, `forearms`, `front-shoulders`, `obliques`, `quads`, `calves`, `traps`, `hands`
-- **Back Muscles:** `lats`, `lowerback`, `glutes`, `hamstrings`, `calves`, `triceps`, `rear-shoulders`, `traps-middle`, `hands`
-
-*Example:*
-```xml
-<g id="chest">
-   <path d="..." fill="currentColor" />
-</g>
-```
-
-## Usage
-
-Using `MuscleMapper` is incredibly simple. Just provide the gender, the view (front or back), and a `Set` of active muscles.
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:muscle_mapper/muscle_mapper.dart';
-
-class AnatomyScreen extends StatefulWidget {
-  @override
-  _AnatomyScreenState createState() => _AnatomyScreenState();
-}
-
-class _AnatomyScreenState extends State<AnatomyScreen> {
-  final Set<Muscle> _activeMuscles = {Muscle.chest, Muscle.abs};
-
-  void _toggleMuscle(Muscle muscle) {
-    setState(() {
-      if (_activeMuscles.contains(muscle)) {
-        _activeMuscles.remove(muscle);
-      } else {
-        _activeMuscles.add(muscle);
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SizedBox(
-          height: 500,
-          // Render the interactive Anatomy Model
-          child: MuscleMapper(
-            gender: AnatomyGender.male,
-            view: AnatomyView.front,
-            assetProvider: const DefaultAnatomyProvider(),
-            activeMuscles: _activeMuscles,
-            onMuscleTapped: _toggleMuscle,
-            baseColor: Colors.grey.shade300,
-            highlightColor: Colors.redAccent,
-          ),
-        ),
-      ),
-    );
-  }
-}
-```
-
-## Major Muscle Groups
-
-If you want to highlight an entire section of the body at once (e.g., the entire arm), you can use the `MuscleGroup` enum. 
-
-The available major groups are: `arms`, `legs`, `core`, `chest`, `back`, `shoulders`, and `headAndNeck`.
-
-You can access the individual muscles inside a group using the `.subMuscles` extension:
-
-```dart
-// Highlight the entire arm (biceps, triceps, forearms, hands)
-MuscleMapper(
-  activeMuscles: MuscleGroup.arms.subMuscles, 
-)
-
-// Highlight multiple major groups at once (arms and legs)
-MuscleMapper(
-  activeMuscles: {
-    ...MuscleGroup.arms.subMuscles,
-    ...MuscleGroup.legs.subMuscles,
-  }, 
-)
-```
-
-You can also find which major group a specific sub-muscle belongs to using `.group`:
-```dart
-final group = Muscle.biceps.group; // Returns MuscleGroup.arms
-```
-
-## Custom Asset Providers
-If you don't want to use the bundled SVGs or want to load them from a network, you can implement your own `AnatomyAssetProvider`.
-
-```dart
-class MyNetworkProvider implements AnatomyAssetProvider {
-  @override
-  Future<String> getAnatomySvgRawString(AnatomyGender gender, AnatomyView view) async {
-    // Fetch the raw SVG string from an API or database
-    final response = await http.get(Uri.parse('https://myapi.com/anatomy.svg'));
-    return response.body;
-  }
-
-  @override
-  Widget buildSvgWidget(String svgString, {BoxFit fit = BoxFit.contain}) {
-    return SvgPicture.string(svgString, fit: fit);
-  }
-}
-```
+MIT License. See [LICENSE](LICENSE) for details.
