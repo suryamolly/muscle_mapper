@@ -36,7 +36,7 @@ Or add manually to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  muscle_mapper: ^1.0.0
+  muscle_mapper: ^1.2.0
 ```
 
 Then run:
@@ -56,6 +56,8 @@ flutter pub get
 | `view` | `AnatomyView` | ✅ | The view direction (`front` or `back`). |
 | `assetProvider` | `AnatomyAssetProvider` | ✅ | The provider that loads and renders the SVG files. Use `DefaultAnatomyProvider(style: AnatomyStyle.minimal)` or `AnatomyStyle.advanced`. |
 | `activeMuscles` | `Set<Muscle>` | ✅ | The set of muscles that are currently highlighted. |
+| `muscleIntensities` | `Map<Muscle, double>?` | ❌ | Per-muscle opacity (0.0–1.0) for heatmap rendering. Use `MuscleIntensity.high.value` etc. for convenience. |
+| `muscleColors` | `Map<Muscle, Color>?` | ❌ | Per-muscle highlight color, overrides the global `highlightColor`. Use `MajorMuscleGroup.defaultColor` for harmonious palettes. |
 | `onMuscleTapped` | `void Function(Muscle)?` | ❌ | Callback fired when the user taps a muscle region. |
 | `onMuscleDoubleTapped` | `void Function(Muscle)?` | ❌ | Callback fired when the user double-taps a muscle region. |
 | `highlightColor` | `Color` | ❌ | The color used to tint highlighted muscles. Defaults to `Colors.red`. |
@@ -180,8 +182,8 @@ void _onTap(Muscle tappedMuscle) {
       // Sub-Muscle Mode: Highlight ONLY the exact piece you tapped
       _activeMuscles.add(tappedMuscle);
     } else {
-      // Group Mode: Highlight the entire group (e.g. the whole chest)
-      _activeMuscles.addAll(tappedMuscle.group.subMuscles);
+      // Group Mode: Highlight the entire major group (e.g. the whole chest)
+      _activeMuscles.addAll(tappedMuscle.group.majorGroup.subMuscles);
     }
   });
 }
@@ -245,13 +247,13 @@ MuscleMapper(
   muscleIntensities: {
     Muscle.longHeadBicep: MuscleIntensity.high.value,    // 1.0 opacity
     Muscle.shortHeadBicep: MuscleIntensity.medium.value, // 0.66 opacity
-    Muscle.pectoralis_major_l: 0.85,                     // Or use exact custom math!
+    Muscle.upperPectoralis: 0.85,                        // Or use exact custom math!
   },
   // 2. Pass explicit highlight colors
   muscleColors: {
     Muscle.longHeadBicep: MajorMuscleGroup.arms.defaultColor,
     Muscle.shortHeadBicep: MajorMuscleGroup.arms.defaultColor,
-    Muscle.pectoralis_major_l: MajorMuscleGroup.chest.defaultColor,
+    Muscle.upperPectoralis: MajorMuscleGroup.chest.defaultColor,
   },
 )
 ```

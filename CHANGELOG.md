@@ -1,3 +1,12 @@
+## 1.2.0
+
+* **Bug Fix — Advanced Mode Abs Mapping**: Corrected the SVG ID assignments for `Muscle.upperAbdominals` and `Muscle.lowerAbdominals` in the `MuscleSvgId` extension. The IDs were previously inverted relative to the advanced SVG's coordinate space, causing taps on the upper abs to register on the lower abs and vice versa.
+* **Behaviour Change — Group Mode Tap**: The default example and documented interaction pattern for "Group Mode" now highlights the full **`MajorMuscleGroup`** (e.g., all of `Legs`) when tapping any sub-muscle, instead of just the narrower `MuscleGroup` (e.g., only `Quads`). Updated via `tappedMuscle.group.majorGroup.subMuscles`.
+* **Example App — Default Colors on Tap**: In the example app's Group Mode, tapped muscles are now coloured with their `MajorMuscleGroup.defaultColor` automatically, giving each body region a distinct harmonious colour without any additional configuration.
+* **Docs — Enum Corrections**: Fixed stale `Muscle` enum references (`pectoralis_major_l`, `anterior_deltoid_l/r`, `rectusAbdominis`) throughout the README and example app to use the correct unified enum values (`upperPectoralis`, `anteriorDeltoid`, etc.).
+
+---
+
 ## 1.1.0
 
 * **Intensity Heatmaps**: `MuscleMapper` now natively supports mapping exercise intensities!

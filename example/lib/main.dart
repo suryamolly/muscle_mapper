@@ -48,7 +48,7 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
           _selectedMuscles.add(tappedMuscle);
         }
       } else {
-        final groupMuscles = tappedMuscle.group.subMuscles;
+        final groupMuscles = tappedMuscle.group.majorGroup.subMuscles;
         if (_selectedMuscles.containsAll(groupMuscles)) {
           _selectedMuscles.removeAll(groupMuscles);
         } else {
@@ -169,26 +169,27 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
                   activeMuscles: _intensityMode ? const {} : _selectedMuscles,
                   muscleIntensities: _intensityMode 
                       ? {
-                          Muscle.rectus_femoris_l: MuscleIntensity.high.value,
-                          Muscle.rectus_femoris_r: MuscleIntensity.low.value,
+                          Muscle.rectusFemoris: MuscleIntensity.high.value,
                           Muscle.upperPectoralis: MuscleIntensity.medium.value,
                           Muscle.midLowerPectoralis: MuscleIntensity.high.value,
-                          Muscle.anterior_deltoid_l: MuscleIntensity.medium.value,
-                          Muscle.anterior_deltoid_r: MuscleIntensity.medium.value,
-                          Muscle.rectusAbdominis: MuscleIntensity.low.value,
+                          Muscle.anteriorDeltoid: MuscleIntensity.medium.value,
+                          Muscle.upperAbdominals: MuscleIntensity.low.value,
+                          Muscle.lowerAbdominals: MuscleIntensity.low.value,
                         } 
                       : null,
                   muscleColors: _intensityMode
                       ? {
-                          Muscle.rectus_femoris_l: MajorMuscleGroup.legs.defaultColor,
-                          Muscle.rectus_femoris_r: MajorMuscleGroup.legs.defaultColor,
+                          Muscle.rectusFemoris: MajorMuscleGroup.legs.defaultColor,
                           Muscle.upperPectoralis: MajorMuscleGroup.chest.defaultColor,
                           Muscle.midLowerPectoralis: MajorMuscleGroup.chest.defaultColor,
-                          Muscle.anterior_deltoid_l: MajorMuscleGroup.shoulders.defaultColor,
-                          Muscle.anterior_deltoid_r: MajorMuscleGroup.shoulders.defaultColor,
-                          Muscle.rectusAbdominis: MajorMuscleGroup.core.defaultColor,
+                          Muscle.anteriorDeltoid: MajorMuscleGroup.shoulders.defaultColor,
+                          Muscle.upperAbdominals: MajorMuscleGroup.core.defaultColor,
+                          Muscle.lowerAbdominals: MajorMuscleGroup.core.defaultColor,
                         }
-                      : null,
+                      : {
+                          for (final m in _selectedMuscles)
+                            m: m.group.majorGroup.defaultColor
+                        },
                   onMuscleTapped: _onMuscleTapped,
                   highlightColor: Colors.redAccent,
                   baseColor: Colors.grey.shade300,

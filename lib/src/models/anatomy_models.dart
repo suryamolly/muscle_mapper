@@ -80,9 +80,9 @@ extension MuscleSvgId on Muscle {
       case Muscle.midLowerPectoralis:
         return ['mid-lower-pectoralis', 'pectoralis_major_l', 'pectoralis_major_r'];
       case Muscle.upperAbdominals:
-        return ['upper-abdominals', 'rectus_abdominis_1', 'rectus_abdominis_2_l', 'rectus_abdominis_2_r'];
+        return ['upper-abdominals', 'rectus_abdominis_4_l', 'rectus_abdominis_4_r', 'rectus_abdominis_2_l', 'rectus_abdominis_2_r'];
       case Muscle.lowerAbdominals:
-        return ['lower-abdominals', 'rectus_abdominis_3_l', 'rectus_abdominis_3_r', 'rectus_abdominis_4_l', 'rectus_abdominis_4_r'];
+        return ['lower-abdominals', 'rectus_abdominis_3_l', 'rectus_abdominis_3_r', 'rectus_abdominis_1'];
       case Muscle.obliques:
         return ['obliques', 'external_oblique_1_l', 'external_oblique_2_l', 'external_oblique_3_l', 'external_oblique_4_l', 'external_oblique_5_l', 'external_oblique_6_l', 'external_oblique_7_l', 'external_oblique_8_l', 'external_oblique_1_r', 'external_oblique_2_r', 'external_oblique_3_r', 'external_oblique_4_r', 'external_oblique_5_r', 'external_oblique_6_r', 'external_oblique_7_r', 'external_oblique_8_r'];
       case Muscle.groin:
