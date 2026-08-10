@@ -5,6 +5,24 @@ import 'package:path_drawing/path_drawing.dart';
 import '../models/anatomy_models.dart';
 import '../models/anatomy_asset_provider.dart';
 
+// ─────────────────────────── Cache Data Class ───────────────────────────
+
+/// Holds all pre-parsed data for a single gender+view SVG.
+/// Stored in the global cache so the expensive XML parsing only happens once.
+class _ParsedSvgData {
+  final String baseSource;
+  final Map<Muscle, String> muscleSources;
+  final Map<Muscle, Path> musclePaths;
+  final Rect viewBox;
+
+  const _ParsedSvgData({
+    required this.baseSource,
+    required this.muscleSources,
+    required this.musclePaths,
+    required this.viewBox,
+  });
+}
+
 /// A widget that displays a 2D human anatomy model with interactive muscle highlighting.
 class MuscleMapper extends StatefulWidget {
   /// The gender of the anatomy model.
@@ -20,8 +38,12 @@ class MuscleMapper extends StatefulWidget {
   final Set<Muscle> activeMuscles;
 
   /// Callback when a muscle is tapped.
-  /// If null, muscles are not interactive.
+  /// If null, muscles are not interactive for single taps.
   final void Function(Muscle)? onMuscleTapped;
+
+  /// Callback when a muscle is double-tapped.
+  /// If null, muscles are not interactive for double taps.
+  final void Function(Muscle)? onMuscleDoubleTapped;
 
   /// The color used to highlight active muscles.
   final Color highlightColor;
@@ -32,6 +54,22 @@ class MuscleMapper extends StatefulWidget {
   /// The duration of the fade animation when a muscle is highlighted.
   final Duration animationDuration;
 
+  /// The animation curve for the highlight fade transition.
+  /// Defaults to [Curves.easeInOut].
+  final Curve animationCurve;
+
+  /// A custom widget to show while the anatomy SVG is loading.
+  /// Defaults to a [CircularProgressIndicator] if null.
+  final Widget? loadingWidget;
+
+  /// Callback fired if the SVG fails to load or parse.
+  /// Use this to show custom error UI or log errors.
+  final void Function(Object error)? onError;
+
+  /// If true, prints parsing and hit-test debug information to the console.
+  /// Useful during development. Defaults to false.
+  final bool verbose;
+
   const MuscleMapper({
     super.key,
     this.gender = AnatomyGender.male,
@@ -39,13 +77,28 @@ class MuscleMapper extends StatefulWidget {
     required this.assetProvider,
     this.activeMuscles = const {},
     this.onMuscleTapped,
+    this.onMuscleDoubleTapped,
     this.highlightColor = Colors.red,
     this.baseColor = Colors.grey,
     this.animationDuration = const Duration(milliseconds: 300),
+    this.animationCurve = Curves.easeInOut,
+    this.loadingWidget,
+    this.onError,
+    this.verbose = false,
   });
 
   @override
   State<MuscleMapper> createState() => _MuscleMapperState();
+
+  /// Global cache keyed by "gender_view" (e.g. "male_front").
+  /// Cleared when [clearCache] is called.
+  static final Map<String, _ParsedSvgData> _cache = {};
+
+  /// Clears the global SVG parse cache.
+  ///
+  /// Call this if you use a custom [AnatomyAssetProvider] that fetches
+  /// SVGs from a network and the remote content has changed.
+  static void clearCache() => _cache.clear();
 }
 
 class _MuscleMapperState extends State<MuscleMapper> {
@@ -81,6 +134,27 @@ class _MuscleMapperState extends State<MuscleMapper> {
   Future<void> _loadAssets() async {
     if (mounted) setState(() => _isLoading = true);
 
+    final cacheKey = '${widget.gender.name}_${widget.view.name}';
+
+    // ── Cache hit: populate local state instantly from cached data ──
+    if (MuscleMapper._cache.containsKey(cacheKey)) {
+      final cached = MuscleMapper._cache[cacheKey]!;
+      _baseAnatomySource = cached.baseSource;
+      _muscleSources
+        ..clear()
+        ..addAll(cached.muscleSources);
+      _musclePaths
+        ..clear()
+        ..addAll(cached.musclePaths);
+      _viewBox = cached.viewBox;
+      if (widget.verbose) {
+        debugPrint('MuscleMapper: cache HIT for $cacheKey');
+      }
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    // ── Cache miss: parse the SVG and populate the cache ──
     try {
       final rawSvg = await widget.assetProvider
           .getAnatomySvgRawString(widget.gender, widget.view);
@@ -145,10 +219,21 @@ class _MuscleMapperState extends State<MuscleMapper> {
         }
       }
 
-      debugPrint(
-          'MuscleMapper: ${_muscleSources.length} muscles, viewBox=$_viewBox');
+      if (widget.verbose) {
+        debugPrint(
+            'MuscleMapper: cache MISS for $cacheKey — parsed ${_muscleSources.length} muscles, viewBox=$_viewBox');
+      }
+
+      // Store parsed results in the global cache for future use
+      MuscleMapper._cache[cacheKey] = _ParsedSvgData(
+        baseSource: _baseAnatomySource!,
+        muscleSources: Map.unmodifiable(_muscleSources),
+        musclePaths: Map.unmodifiable(_musclePaths),
+        viewBox: _viewBox,
+      );
     } catch (e) {
-      debugPrint('MuscleMapper error: $e');
+      if (widget.verbose) debugPrint('MuscleMapper error: $e');
+      widget.onError?.call(e);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -242,9 +327,8 @@ class _MuscleMapperState extends State<MuscleMapper> {
 
   // ─────────────────────────── Hit Testing ───────────────────────────
 
-  void _handleTap(TapUpDetails details, Size size) {
-    if (widget.onMuscleTapped == null) return;
-
+  /// Maps screen coordinates to SVG coordinates and finds the best matching muscle.
+  Muscle? _hitTest(Offset localPosition, Size size) {
     // Replicate BoxFit.contain scaling to map screen coords → SVG coords
     final scaleX = size.width / _viewBox.width;
     final scaleY = size.height / _viewBox.height;
@@ -253,16 +337,40 @@ class _MuscleMapperState extends State<MuscleMapper> {
     final dx = (size.width - _viewBox.width * scale) / 2;
     final dy = (size.height - _viewBox.height * scale) / 2;
 
-    final svgX = (details.localPosition.dx - dx) / scale;
-    final svgY = (details.localPosition.dy - dy) / scale;
+    final svgX = (localPosition.dx - dx) / scale;
+    final svgY = (localPosition.dy - dy) / scale;
     final mapped = Offset(svgX, svgY);
+
+    // Collect ALL muscles whose path contains the tap point,
+    // then pick the one with the smallest bounding box area —
+    // this gives priority to the most precise/foreground muscle.
+    Muscle? bestMatch;
+    double bestArea = double.infinity;
 
     for (final entry in _musclePaths.entries) {
       if (entry.value.contains(mapped)) {
-        widget.onMuscleTapped!(entry.key);
-        return; // Stop at first match
+        final bounds = entry.value.getBounds();
+        final area = bounds.width * bounds.height;
+        if (area < bestArea) {
+          bestArea = area;
+          bestMatch = entry.key;
+        }
       }
     }
+
+    return bestMatch;
+  }
+
+  void _handleTap(TapUpDetails details, Size size) {
+    if (widget.onMuscleTapped == null) return;
+    final match = _hitTest(details.localPosition, size);
+    if (match != null) widget.onMuscleTapped!(match);
+  }
+
+  void _handleDoubleTap(TapDownDetails details, Size size) {
+    if (widget.onMuscleDoubleTapped == null) return;
+    final match = _hitTest(details.localPosition, size);
+    if (match != null) widget.onMuscleDoubleTapped!(match);
   }
 
   // ─────────────────────────── Build ───────────────────────────
@@ -270,7 +378,9 @@ class _MuscleMapperState extends State<MuscleMapper> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: widget.loadingWidget ?? const CircularProgressIndicator(),
+      );
     }
     if (_baseAnatomySource == null) {
       return const Center(child: Text('Failed to load anatomy model.'));
@@ -283,6 +393,9 @@ class _MuscleMapperState extends State<MuscleMapper> {
         return GestureDetector(
           onTapUp:
               widget.onMuscleTapped != null ? (d) => _handleTap(d, size) : null,
+          onDoubleTapDown: widget.onMuscleDoubleTapped != null
+              ? (d) => _handleDoubleTap(d, size)
+              : null,
           behavior: HitTestBehavior.translucent,
           child: Stack(
             alignment: Alignment.center,
@@ -300,6 +413,7 @@ class _MuscleMapperState extends State<MuscleMapper> {
                 return IgnorePointer(
                   child: AnimatedOpacity(
                     duration: widget.animationDuration,
+                    curve: widget.animationCurve,
                     opacity: isActive ? 1.0 : 0.0,
                     child: ColorFiltered(
                       colorFilter: ColorFilter.mode(

@@ -1,3 +1,23 @@
+## 1.0.0
+
+🎉 **Major Stable Release!** `muscle_mapper` is now production-ready with comprehensive test coverage, robust performance, and extensive developer API enhancements.
+
+**Performance & Architecture**
+* **Global SVG Cache**: The expensive SVG XML parsing now only happens once per gender+view combination per app session. Subsequent view switches load from an in-memory cache for an instant, flash-free experience.
+* **`MuscleMapper.clearCache()`**: Added a static method to manually clear the global cache. Useful for custom `AnatomyAssetProvider` implementations that fetch SVGs from a network.
+* **Smarter Hit Testing**: Tapping in an overlapping region no longer just picks the first match. The widget now finds ALL muscles whose paths contain the tap point and returns the one with the **smallest bounding box** — giving priority to the most precise, foreground muscle.
+
+**Developer Experience (API Additions)**
+* **`onMuscleDoubleTapped`**: Added callback for double-tap interactions, enabling complex flows (e.g., tap to select, double-tap to view details).
+* **`verbose` flag**: Added `verbose: bool` parameter. When `true`, debug parsing logs are printed to the console. Defaults to `false` to keep production logs clean.
+* **`animationCurve` parameter**: Added `animationCurve: Curve` for the highlight fade transition. Defaults to `Curves.easeInOut`.
+* **`loadingWidget` parameter**: Added `loadingWidget: Widget?` to provide a custom loading state UI. Defaults to `CircularProgressIndicator`.
+* **`onError` callback**: Added `onError: void Function(Object)?` that fires when the SVG fails to load or parse, enabling graceful error handling.
+
+**Testing & Reliability**
+* Added comprehensive unit and widget test suite covering the full 3-tier hierarchy (`Muscle`, `MuscleGroup`, `MajorMuscleGroup`), orphan detection, disjoint coverage, and widget smoke tests.
+
+
 ## 0.0.6
 
 * **Maintenance**: Bumped `flutter_svg` to `^2.3.0` and `xml` to `^7.0.1` to support the latest up-to-date dependencies for pub.dev scoring.

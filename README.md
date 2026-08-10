@@ -35,7 +35,7 @@ Or add manually to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  muscle_mapper: ^0.0.6
+  muscle_mapper: ^1.0.0
 ```
 
 Then run:
@@ -56,8 +56,20 @@ flutter pub get
 | `assetProvider` | `AnatomyAssetProvider` | ✅ | The provider that loads and renders the SVG files. Use `DefaultAnatomyProvider()` for bundled assets. |
 | `activeMuscles` | `Set<Muscle>` | ✅ | The set of muscles that are currently highlighted. |
 | `onMuscleTapped` | `void Function(Muscle)?` | ❌ | Callback fired when the user taps a muscle region. |
+| `onMuscleDoubleTapped` | `void Function(Muscle)?` | ❌ | Callback fired when the user double-taps a muscle region. |
 | `highlightColor` | `Color` | ❌ | The color used to tint highlighted muscles. Defaults to `Colors.red`. |
-| `baseColor` | `Color?` | ❌ | The color used for the base silhouette. |
+| `baseColor` | `Color?` | ❌ | The color used for the base silhouette. Defaults to `Colors.grey`. |
+| `animationDuration` | `Duration` | ❌ | Duration of the highlight fade animation. Defaults to `300ms`. |
+| `animationCurve` | `Curve` | ❌ | Curve of the highlight fade animation. Defaults to `Curves.easeInOut`. |
+| `loadingWidget` | `Widget?` | ❌ | Custom widget shown while the SVG is loading. Defaults to `CircularProgressIndicator`. |
+| `onError` | `void Function(Object)?` | ❌ | Callback fired if the SVG fails to load or parse. Use this for graceful error handling. |
+| `verbose` | `bool` | ❌ | When `true`, prints parsing and hit-test logs to the console. Defaults to `false`. |
+
+### Static Methods
+
+| Method | Description |
+|---|---|
+| `MuscleMapper.clearCache()` | Clears the global SVG parse cache. Call this when using a network-based `AnatomyAssetProvider` whose remote content has changed. |
 
 ---
 
