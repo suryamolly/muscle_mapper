@@ -10,8 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_svg: ^2.3.0
-  xml: ^7.0.1
+  flutter_svg: ^2.1.0
+  xml: ^6.5.0
   path_drawing: ^1.0.1
 
 dev_dependencies:
