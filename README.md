@@ -20,6 +20,7 @@ A pure Dart/Flutter UI package providing an interactive 2D human anatomy model w
 - **Programmatic Highlighting:** Control selections entirely from code — no user tap needed.
 - **Dynamic Color Theming:** Set any `highlightColor` and `baseColor` per widget instance.
 - **Smooth Animations:** Fade transitions when muscles activate or deactivate.
+- **Dual Bundled Assets:** Ships out of the box with two completely different bundled asset styles (`minimal` and `advanced`).
 - **BYOA Architecture:** Load SVGs from assets, network, or any source via a simple `AnatomyAssetProvider` interface.
 - **4-View Support:** Male Front, Male Back, Female Front, Female Back — all from a single widget.
 
@@ -94,7 +95,7 @@ The package requires 4 whole-body SVG files. Each file must use `<g id="...">` g
 
 ### 1. File Names
 
-Place your SVG files wherever your `AnatomyAssetProvider` points to. The default `DefaultAnatomyProvider` expects them in the package's own `assets/` folder:
+Place your SVG files wherever your `AnatomyAssetProvider` points to. The bundled `DefaultAnatomyProvider` loads them from `packages/muscle_mapper/lib/src/assets/minimal/` or `assets/advanced/` depending on the `AnatomyStyle`:
 
 | File | Description |
 |---|---|
@@ -264,7 +265,7 @@ class _AnatomyScreenState extends State<AnatomyScreen> {
           child: MuscleMapper(
             gender: AnatomyGender.male,
             view: AnatomyView.front,
-            assetProvider: const DefaultAnatomyProvider(),
+            assetProvider: const DefaultAnatomyProvider(style: AnatomyStyle.advanced),
             activeMuscles: _activeMuscles,
             onMuscleTapped: _onTap,
             highlightColor: Colors.redAccent,
