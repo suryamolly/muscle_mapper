@@ -84,12 +84,8 @@ The `DefaultAnatomyProvider` comes with two bundled SVG styles:
 Currently, the `advanced` style only provides **male** anatomy assets. If you request `AnatomyGender.female` while using `AnatomyStyle.advanced`, the package will safely fall back to displaying the male advanced model to prevent crashing.
 
 ### Attribution (Advanced SVGs)
-The `advanced` SVGs are generously provided under the **Creative Commons Attribution 4.0 International License (CC BY 4.0)** by **Ryan Graves**.
-- **Author**: Ryan Graves
-- **Source**: [Figma Community](https://www.figma.com/community/file/1320468164820924031)
-- **License**: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-
-> **Note**: Downstream applications using `AnatomyStyle.advanced` must ensure they also provide clear attribution to Ryan Graves in their application in accordance with the CC BY 4.0 license.
+The `advanced` SVGs are generously provided under the CC BY 4.0 license by **Ryan Graves**.
+If you use `AnatomyStyle.advanced` in your public application, you must provide attribution to Ryan Graves. See the [CREDITS.md](CREDITS.md) file for full attribution details.
 
 ---
 
