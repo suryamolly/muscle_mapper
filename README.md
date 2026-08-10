@@ -232,6 +232,32 @@ ElevatedButton(
 
 ---
 
+## Intensity Heatmaps
+
+`MuscleMapper` natively supports rendering exercise intensities as heatmaps! You can specify distinct colors for different muscles using `muscleColors`, and control their opacity using `muscleIntensities`. 
+
+You can pass exact mathematical values (0.0 to 1.0) or use the built-in `MuscleIntensity` enum. Additionally, you can use the `MajorMuscleGroup.defaultColor` extension to get harmonious default colors for different body parts (e.g., Arms = Blue, Chest = Red).
+
+```dart
+MuscleMapper(
+  assetProvider: const DefaultAnatomyProvider(),
+  // 1. Pass explicit intensity values (opacity)
+  muscleIntensities: {
+    Muscle.longHeadBicep: MuscleIntensity.high.value,    // 1.0 opacity
+    Muscle.shortHeadBicep: MuscleIntensity.medium.value, // 0.66 opacity
+    Muscle.pectoralis_major_l: 0.85,                     // Or use exact custom math!
+  },
+  // 2. Pass explicit highlight colors
+  muscleColors: {
+    Muscle.longHeadBicep: MajorMuscleGroup.arms.defaultColor,
+    Muscle.shortHeadBicep: MajorMuscleGroup.arms.defaultColor,
+    Muscle.pectoralis_major_l: MajorMuscleGroup.chest.defaultColor,
+  },
+)
+```
+
+---
+
 ## Usage
 
 ```dart

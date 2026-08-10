@@ -1,3 +1,11 @@
+## 1.1.0
+
+* **Intensity Heatmaps**: `MuscleMapper` now natively supports mapping exercise intensities!
+  * **`muscleIntensities`**: Pass a `Map<Muscle, double>` to control the exact opacity/intensity of a muscle's highlight.
+  * **`muscleColors`**: Pass a `Map<Muscle, Color>` to give individual muscles custom hues, overriding the global `highlightColor`.
+  * **`MuscleIntensity` Enum**: A convenience enum providing `low`, `medium`, and `high` values that map to optimal `double` opacities.
+  * **`MajorMuscleGroup.defaultColor`**: A new extension providing harmonious default color palettes (e.g. Arms = Blue, Chest = Red).
+
 ## 1.0.0
 
 🎉 **Major Stable Release!** `muscle_mapper` is now production-ready with comprehensive test coverage, robust performance, and extensive developer API enhancements.

@@ -36,8 +36,18 @@ class MuscleMapper extends StatefulWidget {
   /// The provider that supplies the SVG assets.
   final AnatomyAssetProvider assetProvider;
 
-  /// The set of muscles that should be highlighted.
+  /// The set of muscles that are currently highlighted.
+  /// If a muscle is also in [muscleIntensities] or [muscleColors], those
+  /// parameters take precedence for opacity and color respectively.
   final Set<Muscle> activeMuscles;
+
+  /// A map defining explicit intensity values (0.0 to 1.0) for individual muscles.
+  /// This value is used as the opacity of the highlight.
+  final Map<Muscle, double>? muscleIntensities;
+
+  /// A map of muscles to their specific highlight color.
+  /// If provided, this overrides the default [highlightColor].
+  final Map<Muscle, Color>? muscleColors;
 
   /// Callback when a muscle is tapped.
   /// If null, muscles are not interactive for single taps.
@@ -78,6 +88,8 @@ class MuscleMapper extends StatefulWidget {
     this.view = AnatomyView.front,
     required this.assetProvider,
     this.activeMuscles = const {},
+    this.muscleIntensities,
+    this.muscleColors,
     this.onMuscleTapped,
     this.onMuscleDoubleTapped,
     this.highlightColor = Colors.red,
@@ -440,15 +452,22 @@ class _MuscleMapperState extends State<MuscleMapper> {
               // Muscle highlight layers — visual only.
               // All taps are handled by the parent GestureDetector.
               ..._muscleSources.entries.map((entry) {
-                final isActive = widget.activeMuscles.contains(entry.key);
-                final opacity = isActive ? 1.0 : 0.0;
+                final muscle = entry.key;
+                
+                final hasIntensity = widget.muscleIntensities?.containsKey(muscle) ?? false;
+                final hasCustomColor = widget.muscleColors?.containsKey(muscle) ?? false;
+                final isActive = widget.activeMuscles.contains(muscle) || hasIntensity || hasCustomColor;
+                
+                final opacity = hasIntensity 
+                    ? widget.muscleIntensities![muscle]!.clamp(0.0, 1.0) 
+                    : (isActive ? 1.0 : 0.0);
                 
                 Widget muscleWidget = widget.assetProvider.buildSvgWidget(entry.value);
                 
                 if (isActive) {
+                  final tint = widget.muscleColors?[muscle] ?? widget.highlightColor;
                   muscleWidget = ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                        widget.highlightColor, BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(tint, BlendMode.srcIn),
                     child: muscleWidget,
                   );
                 }

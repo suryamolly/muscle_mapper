@@ -37,6 +37,7 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
   AnatomyGender _gender = AnatomyGender.male;
   AnatomyView _view = AnatomyView.front;
   AnatomyStyle _style = AnatomyStyle.minimal;
+  bool _intensityMode = false;
 
   void _onMuscleTapped(Muscle tappedMuscle) {
     setState(() {
@@ -109,8 +110,19 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
                     ButtonSegment(value: AnatomyView.back, label: Text('Back')),
                   ],
                   selected: {_view},
-                  onSelectionChanged: (selection) =>
-                      setState(() => _view = selection.first),
+                  onSelectionChanged: (selection) {
+                    setState(() => _view = selection.first);
+                  },
+                ),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: false, label: Text('Normal')),
+                    ButtonSegment(value: true, label: Text('Intensity Mode')),
+                  ],
+                  selected: {_intensityMode},
+                  onSelectionChanged: (selection) {
+                    setState(() => _intensityMode = selection.first);
+                  },
                 ),
                 SegmentedButton<InteractionMode>(
                   segments: const [
@@ -154,7 +166,29 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
                   gender: _gender,
                   view: _view,
                   assetProvider: DefaultAnatomyProvider(style: _style),
-                  activeMuscles: _selectedMuscles,
+                  activeMuscles: _intensityMode ? const {} : _selectedMuscles,
+                  muscleIntensities: _intensityMode 
+                      ? {
+                          Muscle.rectus_femoris_l: MuscleIntensity.high.value,
+                          Muscle.rectus_femoris_r: MuscleIntensity.low.value,
+                          Muscle.upperPectoralis: MuscleIntensity.medium.value,
+                          Muscle.midLowerPectoralis: MuscleIntensity.high.value,
+                          Muscle.anterior_deltoid_l: MuscleIntensity.medium.value,
+                          Muscle.anterior_deltoid_r: MuscleIntensity.medium.value,
+                          Muscle.rectusAbdominis: MuscleIntensity.low.value,
+                        } 
+                      : null,
+                  muscleColors: _intensityMode
+                      ? {
+                          Muscle.rectus_femoris_l: MajorMuscleGroup.legs.defaultColor,
+                          Muscle.rectus_femoris_r: MajorMuscleGroup.legs.defaultColor,
+                          Muscle.upperPectoralis: MajorMuscleGroup.chest.defaultColor,
+                          Muscle.midLowerPectoralis: MajorMuscleGroup.chest.defaultColor,
+                          Muscle.anterior_deltoid_l: MajorMuscleGroup.shoulders.defaultColor,
+                          Muscle.anterior_deltoid_r: MajorMuscleGroup.shoulders.defaultColor,
+                          Muscle.rectusAbdominis: MajorMuscleGroup.core.defaultColor,
+                        }
+                      : null,
                   onMuscleTapped: _onMuscleTapped,
                   highlightColor: Colors.redAccent,
                   baseColor: Colors.grey.shade300,

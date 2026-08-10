@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Defines the gender of the anatomy model.
 enum AnatomyGender {
   male,
@@ -296,4 +298,37 @@ extension MajorMuscleGroupHelper on MajorMuscleGroup {
 
   /// Helper to get all individual sub-muscles in this major region.
   Set<Muscle> get subMuscles => groups.expand((g) => g.subMuscles).toSet();
+}
+
+/// Provides default harmonious colors for each major muscle group.
+extension MajorMuscleGroupColors on MajorMuscleGroup {
+  Color get defaultColor {
+    switch (this) {
+      case MajorMuscleGroup.arms:
+        return Colors.blue;
+      case MajorMuscleGroup.legs:
+        return Colors.green;
+      case MajorMuscleGroup.core:
+        return Colors.orange;
+      case MajorMuscleGroup.chest:
+        return Colors.red;
+      case MajorMuscleGroup.back:
+        return Colors.purple;
+      case MajorMuscleGroup.shoulders:
+        return Colors.teal;
+      case MajorMuscleGroup.headAndNeck:
+        return Colors.brown;
+    }
+  }
+}
+
+/// A convenience enum for semantic intensity levels. 
+/// These map directly to double values for opacity.
+enum MuscleIntensity {
+  low(0.33),
+  medium(0.66),
+  high(1.0);
+
+  final double value;
+  const MuscleIntensity(this.value);
 }
