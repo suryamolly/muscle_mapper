@@ -347,7 +347,7 @@ class _MuscleMapperState extends State<MuscleMapper> {
           combined.addPath(parseSvgPathData(d), Offset.zero);
         } catch (e) {
           // Some complex path commands may not be supported; skip gracefully
-          debugPrint('path_drawing skipped a path: $e');
+          if (widget.verbose) debugPrint('path_drawing skipped a path: $e');
         }
       }
     }

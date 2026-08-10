@@ -158,7 +158,6 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
                   onMuscleTapped: _onMuscleTapped,
                   highlightColor: Colors.redAccent,
                   baseColor: Colors.grey.shade300,
-                  verbose: true,
                   onError: (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Error loading SVG: $e')),
