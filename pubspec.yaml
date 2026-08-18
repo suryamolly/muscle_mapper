@@ -1,6 +1,6 @@
 name: muscle_mapper
 description: "Flutter widget for interactive human body muscle map. Tap to highlight muscles, show workout heatmaps, and visualize anatomy. Includes male/female SVGs."
-version: 1.2.0
+version: 1.2.1
 homepage: https://github.com/suryamolly/muscle_mapper
 repository: https://github.com/suryamolly/muscle_mapper
 issue_tracker: https://github.com/suryamolly/muscle_mapper/issues
