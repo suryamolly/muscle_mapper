@@ -1,3 +1,9 @@
+## 1.2.2
+
+* **Internal**: Fixed a `prefer_const_constructors` lint warning in `XmlName`.
+
+---
+
 ## 1.2.1
 
 * **Discoverability Enhancements**: Optimized `pubspec.yaml` with topics, screenshots, and repository metadata to improve search visibility and pub.dev score.
