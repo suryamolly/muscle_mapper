@@ -311,10 +311,10 @@ class _MuscleMapperState extends State<MuscleMapper> {
   /// Preserves the original `<svg>` attributes and `<defs>` block.
   String _buildSvgString(XmlElement root, List<XmlElement> elements) {
     final newRoot = XmlElement(
-      XmlName('svg'),
+      XmlName.parts('svg'),
       root.attributes
           .map((a) =>
-              XmlAttribute(XmlName(a.name.local, a.name.prefix), a.value))
+              XmlAttribute(XmlName.parts(a.name.local, prefix: a.name.prefix), a.value))
           .toList(),
       [],
     );
@@ -329,7 +329,7 @@ class _MuscleMapperState extends State<MuscleMapper> {
     if (elements.length == 1) {
       newRoot.children.add(elements.first.copy());
     } else {
-      final wrapper = XmlElement(XmlName('g'), [], []);
+      final wrapper = XmlElement(XmlName.parts('g'), [], []);
       for (final el in elements) {
         wrapper.children.add(el.copy());
       }
