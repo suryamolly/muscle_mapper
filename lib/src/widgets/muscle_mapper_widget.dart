@@ -311,7 +311,7 @@ class _MuscleMapperState extends State<MuscleMapper> {
   /// Preserves the original `<svg>` attributes and `<defs>` block.
   String _buildSvgString(XmlElement root, List<XmlElement> elements) {
     final newRoot = XmlElement(
-      XmlName.parts('svg'),
+      const XmlName.parts('svg'),
       root.attributes
           .map((a) =>
               XmlAttribute(XmlName.parts(a.name.local, prefix: a.name.prefix), a.value))
