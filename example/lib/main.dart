@@ -68,101 +68,112 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Wrap(
-              spacing: 16.0,
-              runSpacing: 16.0,
-              alignment: WrapAlignment.center,
-              children: [
-                SegmentedButton<AnatomyStyle>(
-                  segments: const [
-                    ButtonSegment(
-                        value: AnatomyStyle.minimal, label: Text('Minimal')),
-                    ButtonSegment(
-                        value: AnatomyStyle.advanced, label: Text('Advanced')),
-                  ],
-                  selected: {_style},
-                  onSelectionChanged: (selection) {
-                    setState(() {
-                      _style = selection.first;
-                      if (_style == AnatomyStyle.advanced) {
-                        _gender = AnatomyGender.male; // Enforce male for advanced
-                      }
-                    });
-                  },
+            padding: const EdgeInsets.all(8.0),
+            child: SegmentedButtonTheme(
+              data: SegmentedButtonThemeData(
+                style: SegmentedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  textStyle: const TextStyle(fontSize: 12),
                 ),
-                if (_style == AnatomyStyle.minimal)
-                  SegmentedButton<AnatomyGender>(
+              ),
+              child: Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                alignment: WrapAlignment.center,
+                children: [
+                  SegmentedButton<AnatomyStyle>(
                     segments: const [
                       ButtonSegment(
-                          value: AnatomyGender.male, label: Text('Male')),
+                          value: AnatomyStyle.minimal, label: Text('Minimal')),
                       ButtonSegment(
-                          value: AnatomyGender.female, label: Text('Female')),
+                          value: AnatomyStyle.advanced, label: Text('Advanced')),
                     ],
-                    selected: {_gender},
-                    onSelectionChanged: (selection) =>
-                        setState(() => _gender = selection.first),
+                    selected: {_style},
+                    onSelectionChanged: (selection) {
+                      setState(() {
+                        _style = selection.first;
+                        if (_style == AnatomyStyle.advanced) {
+                          _gender = AnatomyGender.male; // Enforce male for advanced
+                        }
+                      });
+                    },
                   ),
-                SegmentedButton<AnatomyView>(
-                  segments: const [
-                    ButtonSegment(
-                        value: AnatomyView.front, label: Text('Front')),
-                    ButtonSegment(value: AnatomyView.back, label: Text('Back')),
-                  ],
-                  selected: {_view},
-                  onSelectionChanged: (selection) {
-                    setState(() => _view = selection.first);
-                  },
-                ),
-                SegmentedButton<bool>(
-                  segments: const [
-                    ButtonSegment(value: false, label: Text('Normal')),
-                    ButtonSegment(value: true, label: Text('Intensity Mode')),
-                  ],
-                  selected: {_intensityMode},
-                  onSelectionChanged: (selection) {
-                    setState(() => _intensityMode = selection.first);
-                  },
-                ),
-                SegmentedButton<InteractionMode>(
-                  segments: const [
-                    ButtonSegment(
-                      value: InteractionMode.group,
-                      label: Text('Group Mode'),
+                  if (_style == AnatomyStyle.minimal)
+                    SegmentedButton<AnatomyGender>(
+                      segments: const [
+                        ButtonSegment(
+                            value: AnatomyGender.male, label: Text('Male')),
+                        ButtonSegment(
+                            value: AnatomyGender.female, label: Text('Female')),
+                      ],
+                      selected: {_gender},
+                      onSelectionChanged: (selection) =>
+                          setState(() => _gender = selection.first),
                     ),
-                    ButtonSegment(
-                      value: InteractionMode.subMuscle,
-                      label: Text('Sub-Muscle Mode'),
+                  SegmentedButton<AnatomyView>(
+                    segments: const [
+                      ButtonSegment(
+                          value: AnatomyView.front, label: Text('Front')),
+                      ButtonSegment(value: AnatomyView.back, label: Text('Back')),
+                    ],
+                    selected: {_view},
+                    onSelectionChanged: (selection) {
+                      setState(() => _view = selection.first);
+                    },
+                  ),
+                  SegmentedButton<bool>(
+                    segments: const [
+                      ButtonSegment(value: false, label: Text('Normal')),
+                      ButtonSegment(value: true, label: Text('Intensity')),
+                    ],
+                    selected: {_intensityMode},
+                    onSelectionChanged: (selection) {
+                      setState(() => _intensityMode = selection.first);
+                    },
+                  ),
+                  SegmentedButton<InteractionMode>(
+                    segments: const [
+                      ButtonSegment(
+                        value: InteractionMode.group,
+                        label: Text('Group'),
+                      ),
+                      ButtonSegment(
+                        value: InteractionMode.subMuscle,
+                        label: Text('Sub-Muscle'),
+                      ),
+                    ],
+                    selected: {_mode},
+                    onSelectionChanged: (newSelection) {
+                      setState(() {
+                        _mode = newSelection.first;
+                        _selectedMuscles.clear();
+                      });
+                    },
+                  ),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      textStyle: const TextStyle(fontSize: 12),
                     ),
-                  ],
-                  selected: {_mode},
-                  onSelectionChanged: (newSelection) {
-                    setState(() {
-                      _mode = newSelection.first;
-                      _selectedMuscles.clear();
-                    });
-                  },
-                ),
-              ],
+                    onPressed: () {
+                      setState(() {
+                        _gender = AnatomyGender.male;
+                        _view = AnatomyView.front;
+                        _selectedMuscles.addAll(MuscleGroup.chest.subMuscles);
+                      });
+                    },
+                    icon: const Icon(Icons.fitness_center, size: 16),
+                    label: const Text('Programmatic Highlight: Chest'),
+                  ),
+                ],
+              ),
             ),
           ),
-          OutlinedButton.icon(
-            onPressed: () {
-              setState(() {
-                _gender = AnatomyGender.male;
-                _view = AnatomyView.front;
-                _selectedMuscles.addAll(MuscleGroup.chest.subMuscles);
-              });
-            },
-            icon: const Icon(Icons.fitness_center),
-            label: const Text('Programmatic Highlight: Chest'),
-          ),
           Expanded(
-            child: Center(
-              child: SizedBox(
-                width: 300,
-                height: 500,
-                child: MuscleMapper(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: MuscleMapper(
                   gender: _gender,
                   view: _view,
                   assetProvider: DefaultAnatomyProvider(style: _style),
@@ -200,7 +211,6 @@ class _MuscleMapperExamplePageState extends State<MuscleMapperExamplePage> {
                   },
                 ),
               ),
-            ),
           ),
           SizedBox(
             height: 120, // Fixes height to exactly 2 rows of Chips

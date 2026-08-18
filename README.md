@@ -2,6 +2,9 @@
 
 <img src="doc/demo.gif" width="300" alt="Demo Video" />
 
+[![pub points](https://img.shields.io/pub/points/muscle_mapper)](https://pub.dev/packages/muscle_mapper/score)
+[![downloads](https://img.shields.io/pub/dm/muscle_mapper)](https://pub.dev/packages/muscle_mapper)
+[![popularity](https://img.shields.io/pub/popularity/muscle_mapper)](https://pub.dev/packages/muscle_mapper)
 [![pub.dev](https://img.shields.io/pub/v/muscle_mapper.svg)](https://pub.dev/packages/muscle_mapper)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
@@ -23,6 +26,29 @@ A pure Dart/Flutter UI package providing an interactive 2D human anatomy model w
 - **Dual Bundled Assets:** Ships out of the box with two completely different bundled asset styles (`minimal` and `advanced`).
 - **BYOA Architecture:** Load SVGs from assets, network, or any source via a simple `AnatomyAssetProvider` interface.
 - **4-View Support:** Male Front, Male Back, Female Front, Female Back — all from a single widget.
+
+---
+
+## 🎯 Perfect For
+
+- 🏋️ **Fitness & Workout Apps** — Show which muscles a workout targets and highlight active muscle groups.
+- 🩺 **Physical Therapy Apps** — Track injury sites and recovery progress interactively.
+- 📚 **Medical Education** — Provide an interactive anatomy explorer for students.
+- 🧘 **Yoga & Stretching Apps** — Visualize stretch zones on the human body.
+- 📊 **Training Log Apps** — Use heatmaps to show volume per muscle group over time.
+
+---
+
+## 🏆 Why Muscle Mapper? (vs. Alternatives)
+
+| Feature | `muscle_mapper` | Others (`flutter_body_part_selector` etc) |
+|---|---|---|
+| **Architecture** | **BYOA** (Bring Your Own Asset) | Hardcoded package assets |
+| **Selection Precision** | **100% pixel-perfect math** | Box bounding / overlaps possible |
+| **Female Anatomy** | **Yes** (Built-in) | No |
+| **Granularity** | **3-Tier** (Sub-muscle, Group, Major) | Flat list |
+| **Heatmap Support** | **Yes** (Opacity + Custom Colors) | No |
+| **Asset Styles** | **Minimal & Advanced** included | Basic only |
 
 ---
 

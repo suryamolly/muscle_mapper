@@ -1,7 +1,24 @@
 name: muscle_mapper
-description: "A pure Dart/Flutter UI package providing a 2D human anatomy model with multi-select muscle highlighting and a BYOA (Bring Your Own Asset) architecture."
+description: "Flutter widget for interactive human body muscle map. Tap to highlight muscles, show workout heatmaps, and visualize anatomy. Includes male/female SVGs."
 version: 1.2.0
 homepage: https://github.com/suryamolly/muscle_mapper
+repository: https://github.com/suryamolly/muscle_mapper
+issue_tracker: https://github.com/suryamolly/muscle_mapper/issues
+
+topics:
+  - ui
+  - fitness
+  - anatomy
+  - svg
+  - body-map
+
+screenshots:
+  - description: "Interactive muscle highlighting on male front anatomy"
+    path: doc/screenshots/male_front_highlight.png
+  - description: "Workout heatmap with intensity levels"
+    path: doc/screenshots/heatmap.png
+  - description: "Female anatomy front and back views"
+    path: doc/screenshots/female_views.png
 
 environment:
   sdk: ^3.5.4
@@ -10,8 +27,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_svg: ^2.1.0
-  xml: ^6.5.0
+  flutter_svg: ^2.3.0
+  xml: ^7.0.1
   path_drawing: ^1.0.1
 
 dev_dependencies:
